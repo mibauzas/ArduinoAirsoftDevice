@@ -33,6 +33,43 @@ volatile long interrupt_count = 0;
 char time_output[9];
 
 /*
+ * 4x4 Keypad - The circuit:
+ * ROW0 to digital pin 19
+ * ROW1 to digital pin 18
+ * ROW2 to digital pin 17
+ * ROW3 to digital pin 16
+ * COL0 to digital pin 15
+ * COL1 to digital pin 14
+ * COL2 to digital pin 10
+ * COL3 to digital pin 3
+ */
+const byte KEYPAD_ROWS = 4;
+const byte KEYPAD_COLS = 4;
+
+const uint8_t KEYPAD_ROW0 = 19,
+			  KEYPAD_ROW1 = 18,
+			  KEYPAD_ROW2 = 17,
+			  KEYPAD_ROW3 = 16,
+			  KEYPAD_COL0 = 15,
+			  KEYPAD_COL1 = 14,
+			  KEYPAD_COL2 = 10,
+			  KEYPAD_COL3 = 3;
+
+char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'#','0','*','D'}
+};
+
+byte rowPins[KEYPAD_ROWS] = {KEYPAD_ROW0,KEYPAD_ROW1,KEYPAD_ROW2,KEYPAD_ROW3};
+byte colPins[KEYPAD_COLS] = {KEYPAD_COL0,KEYPAD_COL1,KEYPAD_COL2,KEYPAD_COL3};
+
+Keypad customKeypad = Keypad( makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
+
+char customKey;
+
+/*
  * LED - The circuit:
  * Onboard led pin 13
  */
@@ -66,6 +103,8 @@ void setup()
 	lcd.begin(16, 2);
 	lcd.clear();
 	lcd.print("Time:");
+	lcd.setCursor(0, 1);
+	lcd.print("Key:");
 
 	// Initialize digital pin LED1_PIN as an output
 	pinMode(LED1_PIN, OUTPUT);
@@ -86,6 +125,13 @@ void loop()
 	}
 	interrupts();
 
+	customKey = customKeypad.getKey();
+
+	if (customKey != NO_KEY){
+		lcd.setCursor(8,1);
+		lcd.print(customKey);
+	}
+
 	//Toggle led1 if necessary
 	if (update_led1){
 		digitalWrite(LED1_PIN, led1State);
@@ -94,8 +140,9 @@ void loop()
 
 	// Update the display with the interrupt count
 	if(update_display){
+		secondsToTime(interrupt_count, time_output);
 		lcd.setCursor(8, 0);
-		lcd.print(interrupt_count);
+		lcd.print(time_output);
 		update_display = false;
 	}
 }

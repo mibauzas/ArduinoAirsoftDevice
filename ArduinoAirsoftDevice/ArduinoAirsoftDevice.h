@@ -11,6 +11,7 @@
 //add your includes for the project ArduinoAirsoftDevice here
 #include "src/TimeConverter.h"
 #include "LiquidCrystal.h"
+#include "Keypad.h"
 
 //end of add your includes here
 
