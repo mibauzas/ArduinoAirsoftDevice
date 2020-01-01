@@ -2,6 +2,37 @@
 #include "ArduinoAirsoftDevice.h"
 
 /*
+ * LCD - The circuit:
+ * LCD RS pin to digital pin 12
+ * LCD Enable pin to digital pin 11
+ * LCD D4 pin to digital pin 4
+ * LCD D5 pin to digital pin 5
+ * LCD D6 pin to digital pin 6
+ * LCD D7 pin to digital pin 7
+ * LCD R/W pin to ground
+ * LCD VSS pin to ground
+ * LCD VCC pin to 5V
+ * LCD A (Backlight) pin to 3.3V
+ * 10K resistor
+ * ends to +5V and ground
+ * wiper to LCD VO pin (pin 3)
+ *
+ * define the constants based on the circuit
+ */
+const uint8_t LCD_RS_PIN = 12,
+              LCD_EN_PIN = 11,
+              LCD_D4_PIN = 4,
+              LCD_D5_PIN = 5,
+              LCD_D6_PIN = 6,
+              LCD_D7_PIN = 7;
+LiquidCrystal lcd(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
+
+// Display variables
+bool update_display = true;
+volatile long interrupt_count = 0;
+char time_output[9];
+
+/*
  * LED - The circuit:
  * Onboard led pin 13
  */
@@ -31,6 +62,11 @@ void setup()
 	TIMSK1 |= (1 << OCIE1A);
 	interrupts();
 
+	// set up the LCD's number of columns and rows:
+	lcd.begin(16, 2);
+	lcd.clear();
+	lcd.print("Time:");
+
 	// Initialize digital pin LED1_PIN as an output
 	pinMode(LED1_PIN, OUTPUT);
 }
@@ -44,6 +80,8 @@ void loop()
 	if (t1_semaphore){
 		led1State = !led1State;
 		update_led1 = true;
+		update_display = true;
+		interrupt_count++;
 		t1_semaphore = false;
 	}
 	interrupts();
@@ -52,6 +90,13 @@ void loop()
 	if (update_led1){
 		digitalWrite(LED1_PIN, led1State);
 		update_led1 = false;
+	}
+
+	// Update the display with the interrupt count
+	if(update_display){
+		lcd.setCursor(8, 0);
+		lcd.print(interrupt_count);
+		update_display = false;
 	}
 }
 
