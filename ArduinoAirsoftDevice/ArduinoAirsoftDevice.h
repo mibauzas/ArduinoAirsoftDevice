@@ -7,8 +7,9 @@
 #ifndef _ArduinoAirsoftDevice_H_
 #define _ArduinoAirsoftDevice_H_
 #include "Arduino.h"
-#include "src/TimeConverter.h"
+
 //add your includes for the project ArduinoAirsoftDevice here
+#include "src/TimeConverter.h"
 
 
 //end of add your includes here
