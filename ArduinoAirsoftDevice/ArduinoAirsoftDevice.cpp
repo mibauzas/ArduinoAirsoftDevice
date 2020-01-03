@@ -77,9 +77,22 @@ const uint8_t LED1_PIN = 13;
 int led1State = LOW;
 bool update_led1 = false;
 
+/*
+ * Button
+ */
+const uint8_t A_TEAM_BTN = 2;
+byte A_TEAM_BTN_STATE = 0;
+const long DEBOUNCE_INTERVAL = 30L;
+unsigned long A_TEAM_BTN_DBNC = 0;
+
 //Timer1 semaphore
 volatile bool t1_semaphore = true;
 
+/*
+ * Debounces the button, interval determines how long it would take to confirm a state change
+ * Returns true while the button is pressed
+ */
+boolean butndown(char button, unsigned long *marker, byte *butnstate, unsigned long interval);
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -117,8 +130,6 @@ void loop()
 	noInterrupts();
 	// Check if 1 second has passed.
 	if (t1_semaphore){
-		led1State = !led1State;
-		update_led1 = true;
 		update_display = true;
 		interrupt_count++;
 		t1_semaphore = false;
@@ -130,6 +141,18 @@ void loop()
 	if (customKey != NO_KEY){
 		lcd.setCursor(8,1);
 		lcd.print(customKey);
+	}
+
+	if (butndown(digitalRead(A_TEAM_BTN),&A_TEAM_BTN_DBNC,&A_TEAM_BTN_STATE,DEBOUNCE_INTERVAL)){
+		if (led1State == LOW){
+			update_led1 = true;
+			led1State = HIGH;
+		}
+	} else {
+		if (led1State == HIGH){
+			update_led1 = true;
+			led1State = LOW;
+		}
 	}
 
 	//Toggle led1 if necessary
@@ -146,6 +169,57 @@ void loop()
 		update_display = false;
 	}
 }
+
+boolean butndown(char button, unsigned long *marker, byte *butnstate, unsigned long interval) {
+  switch (*butnstate) {               // Odd states if was pressed, >= 2 if debounce in progress
+  case 0: // Button up so far,
+    if (button == HIGH) return false; // Nothing happening!
+    else {
+      *butnstate = 2;                 // record that is now pressed
+      *marker = millis();             // note when was pressed
+      return false;                   // and move on
+    }
+  case 1: // Button down so far,
+    if (button == LOW) return true; // Nothing happening!
+    else {
+      *butnstate = 3;                 // record that is now released
+      *marker = millis();             // note when was released
+      return false;                   // and move on
+    }
+  case 2: // Button was up, now down.
+    if (button == HIGH) {
+      *butnstate = 0;                 // no, not debounced; revert the state
+      return false;                   // False alarm!
+    }
+    else {
+      if (millis() - *marker >= interval) {
+        *butnstate = 1;               // jackpot!  update the state
+        return true;                  // because we have the desired event!
+      }
+      else
+        return false;                 // not done yet; just move on
+    }
+  case 3: // Button was down, now up.
+    if (button == LOW) {
+      *butnstate = 1;                 // no, not debounced; revert the state
+      return false;                   // False alarm!
+    }
+    else {
+      if (millis() - *marker >= interval) {
+        *butnstate = 0;               // Debounced; update the state
+        return false;                 // but it is not the event we want
+      }
+      else
+        return false;                 // not done yet; just move on
+    }
+  default:                            // Error; recover anyway
+    {
+      *butnstate = 0;
+      return false;                   // Definitely false!
+    }
+  }
+}
+
 
 // ISR handling 1 second interrupts
 ISR(TIMER1_COMPA_vect){
