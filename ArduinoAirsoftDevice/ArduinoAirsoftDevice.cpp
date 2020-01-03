@@ -28,9 +28,9 @@ const uint8_t LCD_RS_PIN = 12,
 LiquidCrystal lcd(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
 // Display variables
-bool update_display = true;
-volatile long interrupt_count = 0;
-char time_output[9];
+bool updateDisplay = true;
+volatile long interruptCount = 0;
+char timeOutput[9];
 
 /*
  * 4x4 Keypad - The circuit:
@@ -67,32 +67,32 @@ byte colPins[KEYPAD_COLS] = {KEYPAD_COL0,KEYPAD_COL1,KEYPAD_COL2,KEYPAD_COL3};
 
 Keypad customKeypad = Keypad( makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
 
-char customKey;
+char pressedKey;
 
 /*
  * LED - The circuit:
  * Onboard led pin 13
  */
-const uint8_t LED1_PIN = 13;
-int led1State = LOW;
-bool update_led1 = false;
+const uint8_t LED_A_PIN = 13;
+int ledAState = LOW;
+bool updateLedA = false;
 
 /*
  * Button
  */
-const uint8_t A_TEAM_BTN = 2;
-byte A_TEAM_BTN_STATE = 0;
 const long DEBOUNCE_INTERVAL = 30L;
+const uint8_t A_TEAM_BTN_PIN = 2;
+byte A_TEAM_BTN_STATE = 0;
 unsigned long A_TEAM_BTN_DBNC = 0;
 
 //Timer1 semaphore
-volatile bool t1_semaphore = true;
+volatile bool timer1Semaphore = true;
 
 /*
  * Debounces the button, interval determines how long it would take to confirm a state change
  * Returns true while the button is pressed
  */
-boolean butndown(char button, unsigned long *marker, byte *butnstate, unsigned long interval);
+boolean buttonDown(char button, unsigned long *marker, byte *butnstate, unsigned long interval);
 
 //The setup function is called once at startup of the sketch
 void setup()
@@ -119,8 +119,8 @@ void setup()
 	lcd.setCursor(0, 1);
 	lcd.print("Key:");
 
-	// Initialize digital pin LED1_PIN as an output
-	pinMode(LED1_PIN, OUTPUT);
+	// Initialize digital pin LED_A_PIN as an output
+	pinMode(LED_A_PIN, OUTPUT);
 }
 
 // The loop function is called in an endless loop
@@ -129,48 +129,48 @@ void loop()
 	// Start of critical section
 	noInterrupts();
 	// Check if 1 second has passed.
-	if (t1_semaphore){
-		update_display = true;
-		interrupt_count++;
-		t1_semaphore = false;
+	if (timer1Semaphore){
+		updateDisplay = true;
+		interruptCount++;
+		timer1Semaphore = false;
 	}
 	interrupts();
 
-	customKey = customKeypad.getKey();
+	pressedKey = customKeypad.getKey();
 
-	if (customKey != NO_KEY){
+	if (pressedKey != NO_KEY){
 		lcd.setCursor(8,1);
-		lcd.print(customKey);
+		lcd.print(pressedKey);
 	}
 
-	if (butndown(digitalRead(A_TEAM_BTN),&A_TEAM_BTN_DBNC,&A_TEAM_BTN_STATE,DEBOUNCE_INTERVAL)){
-		if (led1State == LOW){
-			update_led1 = true;
-			led1State = HIGH;
+	if (buttonDown(digitalRead(A_TEAM_BTN_PIN),&A_TEAM_BTN_DBNC,&A_TEAM_BTN_STATE,DEBOUNCE_INTERVAL)){
+		if (ledAState == LOW){
+			updateLedA = true;
+			ledAState = HIGH;
 		}
 	} else {
-		if (led1State == HIGH){
-			update_led1 = true;
-			led1State = LOW;
+		if (ledAState == HIGH){
+			updateLedA = true;
+			ledAState = LOW;
 		}
 	}
 
 	//Toggle led1 if necessary
-	if (update_led1){
-		digitalWrite(LED1_PIN, led1State);
-		update_led1 = false;
+	if (updateLedA){
+		digitalWrite(LED_A_PIN, ledAState);
+		updateLedA = false;
 	}
 
 	// Update the display with the interrupt count
-	if(update_display){
-		secondsToTime(interrupt_count, time_output);
+	if(updateDisplay){
+		secondsToTime(interruptCount, timeOutput);
 		lcd.setCursor(8, 0);
-		lcd.print(time_output);
-		update_display = false;
+		lcd.print(timeOutput);
+		updateDisplay = false;
 	}
 }
 
-boolean butndown(char button, unsigned long *marker, byte *butnstate, unsigned long interval) {
+boolean buttonDown(char button, unsigned long *marker, byte *butnstate, unsigned long interval) {
   switch (*butnstate) {               // Odd states if was pressed, >= 2 if debounce in progress
   case 0: // Button up so far,
     if (button == HIGH) return false; // Nothing happening!
@@ -223,5 +223,5 @@ boolean butndown(char button, unsigned long *marker, byte *butnstate, unsigned l
 
 // ISR handling 1 second interrupts
 ISR(TIMER1_COMPA_vect){
-   t1_semaphore = true;
+   timer1Semaphore = true;
 }
