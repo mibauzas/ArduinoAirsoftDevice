@@ -9,6 +9,7 @@
 #include "Arduino.h"
 #include <AUnit.h>
 #include "TimeConverter.h"
+#include "gameLogic.h"
 //add your includes for the project ArduinoAirsfotDeviceTest here
 
 
