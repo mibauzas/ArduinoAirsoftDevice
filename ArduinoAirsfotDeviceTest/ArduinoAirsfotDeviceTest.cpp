@@ -23,8 +23,18 @@ test(secondsConverter){
 }
 
 test(timeConverter){
-	long seconds = timeToSeconds("00:00:00");
-	assertEqual(seconds,0L);
+	strlcpy(time,"00:00:00",9);
+	assertEqual(0UL,timeToSeconds(time));
+	strlcpy(time,"00:00:01",9);
+	assertEqual(1UL,timeToSeconds(time));
+	strlcpy(time,"00:00:59",9);
+	assertEqual(59UL,timeToSeconds(time));
+	strlcpy(time,"00:01:00",9);
+	assertEqual(60UL,timeToSeconds(time));
+	strlcpy(time,"00:59:59",9);
+	assertEqual(3599UL,timeToSeconds(time));
+	strlcpy(time,"01:00:00",9);
+	assertEqual(3600UL,timeToSeconds(time));
 }
 
 void setup(){

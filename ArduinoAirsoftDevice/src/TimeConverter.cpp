@@ -5,8 +5,8 @@
  *      Author: Miquel
  */
 
-void secondsToTime(long seconds,char *output){
-  int hh = 0, mm = 0, ss = 0;
+void secondsToTime(unsigned long seconds,char *output){
+  unsigned int hh = 0, mm = 0, ss = 0;
   hh = seconds / 3600;
   mm = (seconds-(hh*3600))/60;
   ss = seconds % 60;
@@ -21,9 +21,9 @@ void secondsToTime(long seconds,char *output){
   output[8] = '\0';
 }
 
-long timeToSeconds (char *input){
-	long time = 0;
-	long conversion_factor[8] = {36000,3600,0,600,60,0,10,1};
+unsigned long timeToSeconds (char *input){
+	unsigned long time = 0;
+	unsigned int conversion_factor[8] = {36000,3600,0,600,60,0,10,1};
 	int aux = 0;
 	for (int i = 0; i < 9; i++){
 		if (input[i]==':'){
