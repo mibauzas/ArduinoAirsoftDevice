@@ -12,11 +12,19 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 		if (state->remainingTime == 0){
 			switch (config->mode){
 			case DEMOLITION:
-				state->phase = DEFWINS;
+				state->phase = BTEAMWINS;
 				break;
 			case KOTH:
+				if (state->aTeamScore == state->bTeamScore){
+					state->phase = DRAW;
+				}else if (state->aTeamScore > state->bTeamScore){
+					state->phase = ATEAMWINS;
+				}else if (state->aTeamScore < state->bTeamScore){
+					state->phase = BTEAMWINS;
+				}
 				break;
 			case SABOTAGE:
+				state->phase = DRAW;
 				break;
 			}
 		}else{
