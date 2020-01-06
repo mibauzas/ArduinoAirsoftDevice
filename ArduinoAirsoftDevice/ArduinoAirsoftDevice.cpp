@@ -29,7 +29,7 @@ LiquidCrystal lcd(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LC
 
 // Display variables
 bool updateDisplay = true;
-volatile long interruptCount = 0;
+volatile unsigned long interruptCount = 0;
 char timeOutput[9];
 
 /*
@@ -80,7 +80,7 @@ bool updateLedA = false;
 /*
  * Button
  */
-const long DEBOUNCE_INTERVAL = 30L;
+const unsigned long DEBOUNCE_INTERVAL = 30L;
 const uint8_t A_TEAM_BTN_PIN = 2;
 byte A_TEAM_BTN_STATE = 0;
 unsigned long A_TEAM_BTN_DBNC = 0;
