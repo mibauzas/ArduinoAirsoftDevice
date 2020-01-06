@@ -3,8 +3,6 @@
 
 char time[9];
 
-long value = 0;
-
 test(pass){
 	assertEqual(1,1);
 }
@@ -35,6 +33,84 @@ test(timeConverter){
 	assertEqual(3599UL,timeToSeconds(time));
 	strlcpy(time,"01:00:00",9);
 	assertEqual(3600UL,timeToSeconds(time));
+}
+
+/*
+ * Initial state of a game
+ * 3600s remaining time, without owner capture counters set to 0s
+ */
+gameState_t gameState = {
+		.phase = SAFE,
+		.owner = NOTEAM,
+		.remainingTime = 3600,
+		.captureCountDown = 0,
+		.defuseCountDown = 0
+};
+
+/*
+ * Set game mode to SABOTAGE
+ */
+const unsigned int defuseTimer = 5U;
+
+struct gameConfig_t gameConfig = {
+		.mode = SABOTAGE,
+		.defuseTime = defuseTimer
+};
+
+bool aPressed = true;
+bool bPressed = false;
+
+test(safePhaseChange, buttonActivation){
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMING);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,3600U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.defuseCountDown,defuseTimer);
+
+	gameState.phase = SAFE;
+	gameState.owner = NOTEAM;
+	gameState.defuseCountDown = 0;
+	aPressed = false;
+	bPressed = true;
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMING);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,3600U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.defuseCountDown,defuseTimer);
+
+	//bTeam button must be ignored in DEMOLITION mode
+	gameState.phase = SAFE;
+	gameState.owner = NOTEAM;
+	gameState.defuseCountDown = 0;
+	gameConfig.mode = DEMOLITION;
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,SAFE);
+	assertEqual(gameState.owner,NOTEAM);
+	assertEqual(gameState.remainingTime,3600U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+}
+
+test(safePhaseChange, gameTimeRunsOut){
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0;
+	gameState.phase = SAFE;
+	gameState.owner = NOTEAM;
+	gameState.defuseCountDown = 0;
+	gameState.captureCountDown = 0;
+
+	gameConfig.mode = DEMOLITION;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFWINS);
+	assertEqual(gameState.owner,NOTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+
 }
 
 void setup(){
