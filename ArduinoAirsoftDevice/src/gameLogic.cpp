@@ -39,5 +39,39 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 			}
 		}
 		break;
+	case ARMING:
+		if (state->owner == ATEAM){
+			if (aBtnDown){
+				if (state->defuseCountDown == 0){
+					state->phase = ARMED;
+					state->captureCountDown = config->captureTime;
+					if (config->mode == KOTH){
+						state->aTeamScore += config->capturePoints;
+					}
+				}
+			}else{
+				state->phase = SAFE;
+				state->owner = NOTEAM;
+				state->defuseCountDown = 0;
+			}
+		}else if (state->owner == BTEAM){
+			if (bBtnDown){
+				if (state->defuseCountDown == 0){
+					state->phase = ARMED;
+					state->captureCountDown = config->captureTime;
+					if (config->mode == KOTH){
+						state->bTeamScore += config->capturePoints;
+					}
+				}
+			}else{
+				state->phase = SAFE;
+				state->owner = NOTEAM;
+				state->defuseCountDown = 0;
+			}
+		}else{
+			state->phase = SAFE;
+			state->defuseCountDown = 0;
+		}
+		break;
 	}
 }

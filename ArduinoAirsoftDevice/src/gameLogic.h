@@ -15,6 +15,9 @@ enum GAME_MODE {SABOTAGE, DEMOLITION, KOTH};
 struct gameConfig_t{
 	GAME_MODE mode;
 	unsigned int defuseTime;
+	unsigned int captureTime;
+	unsigned int capturePoints; //Awarded points when the device is captured
+	unsigned int defendPoints; //Awarded points for every captureTime seconds
 };
 
 struct gameState_t {
