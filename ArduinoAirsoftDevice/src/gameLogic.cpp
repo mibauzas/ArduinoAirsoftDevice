@@ -73,5 +73,38 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 			state->defuseCountDown = 0;
 		}
 		break;
+	case ARMED:
+		if((aBtnDown && state->owner == BTEAM)||(bBtnDown && state->owner == ATEAM)){
+			state->phase = DEFUSING;
+			state->defuseCountDown = config->defuseTime;
+		}else if (state->captureCountDown > 0) {
+			break; //no change
+		}else{
+			if (config->mode != KOTH){
+				if (state->owner == ATEAM){
+					state->phase = ATEAMWINS;
+				}else{
+					state->phase = BTEAMWINS;
+				}
+			} else {
+				if (state->owner == ATEAM){
+					state->aTeamScore += config->defendPoints;
+				} else if (state->owner == BTEAM){
+					state->bTeamScore += config->defendPoints;
+				}
+				if (state->remainingTime > 0){
+					state->captureCountDown = config->captureTime;
+				} else {
+					if (state->aTeamScore == state->bTeamScore){
+						state->phase = DRAW;
+					}else if (state->aTeamScore > state->bTeamScore){
+						state->phase = ATEAMWINS;
+					}else if (state->aTeamScore < state->bTeamScore){
+						state->phase = BTEAMWINS;
+					}
+				}
+			}
+		}
+		break;
 	}
 }

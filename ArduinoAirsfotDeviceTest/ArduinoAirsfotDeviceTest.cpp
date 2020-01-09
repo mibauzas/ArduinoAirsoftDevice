@@ -449,6 +449,520 @@ test(armingPhaseChange,armingToArmed){
 	assertEqual(gameState.bTeamScore,gameConfig.capturePoints);
 }
 
+test(armedPhaseChange,armedDemolition){
+	//DEMOLITION game, ARMED phase, ATeam is protecting the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = DEMOLITION;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//DEMOLITION game, ARMED phase, ATeam is protecting the device the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = DEMOLITION;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//DEMOLITION game, ARMED phase, ATeam successfully protects the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = DEMOLITION;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ATEAMWINS);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//DEMOLITION game, ARMED phase, BTeam button pressed
+	aPressed = false;
+	bPressed = true;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = DEMOLITION;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+}
+
+test(armedPhaseChange,armedSabotage){
+	//SABOTAGE game, ARMED phase, ATeam is protecting the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, ATeam is protecting the device the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, BTeam is protecting the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, BTeam is protecting the device the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, ATeam successfully protects the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ATEAMWINS);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, BTeam successfully protects the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,BTEAMWINS);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, BTeam button pressed
+	aPressed = false;
+	bPressed = true;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//SABOTAGE game, ARMED phase, ATeam button pressed
+	aPressed = true;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+}
+
+test(armedPhaseChange,armedKOTH){
+	//KOTH game, ARMED phase, ATeam is protecting the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, ATeam is protecting the device the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, ATeam successfully protects the device after
+	//the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 10U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ATEAMWINS);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.aTeamScore,10U+gameConfig.defendPoints);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, BTeam is protecting the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, BTeam is protecting the device the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = SABOTAGE;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, BTeam successfully protects the device after
+	//the game time runs out
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 10U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,BTEAMWINS);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,0U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,10U+gameConfig.defendPoints);
+
+	//KOTH game, ARMED phase, ATeam successfully protects the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 10U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,gameConfig.captureTime);
+	assertEqual(gameState.aTeamScore,10U+gameConfig.defendPoints);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, BTeam successfully protects the device
+	aPressed = false;
+	bPressed = false;
+	gameState.remainingTime = 1500U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 0U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 10U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,ARMED);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,1500U);
+	assertEqual(gameState.defuseCountDown,0U);
+	assertEqual(gameState.captureCountDown,gameConfig.captureTime);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,10U+gameConfig.defendPoints);
+
+	//KOTH game, ARMED phase, BTeam button pressed
+	aPressed = false;
+	bPressed = true;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = ATEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,ATEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, ATeam button pressed
+	aPressed = true;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+
+	//KOTH game, ARMED phase, ATeam button pressed
+	aPressed = true;
+	bPressed = false;
+	gameState.remainingTime = 0U;
+	gameState.phase = ARMED;
+	gameState.owner = BTEAM;
+	gameState.defuseCountDown = 0U;
+	gameState.captureCountDown = 1U;
+	gameState.aTeamScore = 0U;
+	gameState.bTeamScore = 0U;
+
+	gameConfig.mode = KOTH;
+
+	updateGamePhase (&gameConfig, &gameState, aPressed, bPressed);
+	assertEqual(gameState.phase,DEFUSING);
+	assertEqual(gameState.owner,BTEAM);
+	assertEqual(gameState.remainingTime,0U);
+	assertEqual(gameState.defuseCountDown,gameConfig.defuseTime);
+	assertEqual(gameState.captureCountDown,1U);
+	assertEqual(gameState.aTeamScore,0U);
+	assertEqual(gameState.bTeamScore,0U);
+}
+
 void setup(){
 	Serial.begin(9600);
 }
