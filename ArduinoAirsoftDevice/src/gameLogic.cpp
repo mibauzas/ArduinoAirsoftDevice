@@ -106,5 +106,59 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 			}
 		}
 		break;
+	case DEFUSING:
+		if (state->owner == ATEAM){
+			if (bBtnDown){
+				if (state->defuseCountDown == 0){
+					switch (config->mode){
+					case DEMOLITION:
+						state->phase = BTEAMWINS;
+						break;
+					case SABOTAGE:
+						state->phase = SAFE;
+						state->owner = NOTEAM;
+						state->captureCountDown = 0;
+						break;
+					case KOTH:
+						state->phase = ARMED;
+						state->owner = BTEAM;
+						state->captureCountDown = config->captureTime;
+						state->bTeamScore += config->capturePoints;
+						break;
+					}
+				}
+			} else {
+				state->phase = ARMED;
+				state->defuseCountDown = 0;
+			}
+		} else if (state->owner == BTEAM){
+			if (aBtnDown){
+				if (state->defuseCountDown == 0){
+					if (config->mode == SABOTAGE){
+						state->phase = SAFE;
+						state->owner = NOTEAM;
+						state->captureCountDown = 0;
+					} else if (config->mode == KOTH){
+						state->phase = ARMED;
+						state->owner = ATEAM;
+						state->captureCountDown = config->captureTime;
+						state->aTeamScore += config->capturePoints;
+					}
+				}
+			} else {
+				state->phase = ARMED;
+				state->defuseCountDown = 0;
+			}
+		}
+		if (config->mode == KOTH && state->remainingTime == 0){
+			if (state->aTeamScore > state->bTeamScore){
+				state->phase = ATEAMWINS;
+			} else if (state->aTeamScore == state->bTeamScore){
+				state->phase = DRAW;
+			} else {
+				state->phase = BTEAMWINS;
+			}
+		}
+		break;
 	}
 }
