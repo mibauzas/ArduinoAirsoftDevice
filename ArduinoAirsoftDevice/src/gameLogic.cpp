@@ -78,7 +78,7 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 			state->phase = DEFUSING;
 			state->defuseCountDown = config->defuseTime;
 		}else if (state->captureCountDown > 0) {
-			break; //no change
+
 		}else{
 			if (config->mode != KOTH){
 				if (state->owner == ATEAM){
@@ -159,6 +159,11 @@ void updateGamePhase (gameConfig_t *config, gameState_t *state, bool aBtnDown, b
 				state->phase = BTEAMWINS;
 			}
 		}
+		break;
+	case ATEAMWINS:
+	case BTEAMWINS:
+	case DRAW:
+		//End state
 		break;
 	}
 }
